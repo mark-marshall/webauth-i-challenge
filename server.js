@@ -78,15 +78,35 @@ server.post('/api/login', (req, res) => {
 
 /*
 =========== GET ALL USERS (PROTECTED)
-[GET] request with a valid session in play.
+[GET] request within 15 minutes of logging in.
 */
 server.get('/api/users', restricted, (req, res) => {
-    userDb
+  userDb
     .find()
     .then(users => {
-        res.status(200).json(users)
+      res.status(200).json(users);
     })
-    .catch(err => res.status(500).json({ message: 'the users could not be retrieved' }))
-})
+    .catch(err =>
+      res.status(500).json({ message: 'the users could not be retrieved' }),
+    );
+});
+
+/*
+=========== LOGOUT USER
+[POST]
+*/
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.status(400).json(err);
+      } else {
+        res.status(200).json({ message: 'logged out!' });
+      }
+    });
+  } else {
+    res.end();
+  }
+});
 
 module.exports = server;
