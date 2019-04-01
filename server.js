@@ -1,12 +1,19 @@
 const express = require('express');
 const helmet = require('helmet');
+const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+
 const userDb = require('./handlers/userHandlers');
+const sessionConfig = require('./sessionConfig');
+const restricted = require('./middleware');
 
 const server = express();
 
 server.use(helmet());
 server.use(express.json());
+server.use(cors());
+server.use(session(sessionConfig));
 
 /*
 =========== USER REGISTRATION
@@ -51,6 +58,7 @@ server.post('/api/login', (req, res) => {
       .findBy({ username })
       .then(user => {
         if (user && bcrypt.compareSync(password, user.password)) {
+          req.session.username = user.username;
           res.status(200).json({ message: `welcome in ${username}` });
         } else {
           res
@@ -62,12 +70,23 @@ server.post('/api/login', (req, res) => {
         res.status(500).json({ message: 'the user could not be logged in' }),
       );
   } else {
-    res
-      .status(404)
-      .json({
-        message: 'please enter both your username and password to login',
-      });
+    res.status(404).json({
+      message: 'please enter both your username and password to login',
+    });
   }
 });
+
+/*
+=========== GET ALL USERS (PROTECTED)
+[GET] request with a valid session in play.
+*/
+server.get('/api/users', restricted, (req, res) => {
+    userDb
+    .find()
+    .then(users => {
+        res.status(200).json(users)
+    })
+    .catch(err => res.status(500).json({ message: 'the users could not be retrieved' }))
+})
 
 module.exports = server;
