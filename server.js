@@ -1,6 +1,5 @@
 const express = require('express');
 const helmet = require('helmet');
-const knex = require('knex');
 const bcrypt = require('bcryptjs');
 const userDb = require('./handlers/userHandlers');
 
@@ -17,6 +16,8 @@ server.use(express.json());
 */
 server.post('/api/register', (req, res) => {
   const user = req.body;
+  const hashPass = bcrypt.hashSync(user.password, 10);
+  user.password = hashPass;
 
   if (user.username && user.password) {
     userDb
@@ -49,7 +50,7 @@ server.post('/api/login', (req, res) => {
     userDb
       .findBy({ username })
       .then(user => {
-        if (user && user.password === password) {
+        if (user && bcrypt.compareSync(password, user.password)) {
           res.status(200).json({ message: `welcome in ${username}` });
         } else {
           res
