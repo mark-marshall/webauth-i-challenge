@@ -6,7 +6,7 @@ const session = require('express-session');
 
 const userDb = require('./handlers/userHandlers');
 const sessionConfig = require('./sessionConfig');
-const restricted = require('./middleware');
+const middleware = require('./middleware');
 
 const server = express();
 
@@ -14,6 +14,7 @@ server.use(helmet());
 server.use(express.json());
 server.use(cors());
 server.use(session(sessionConfig));
+server.use(middleware.protected);
 
 /*
 =========== USER REGISTRATION
@@ -80,7 +81,7 @@ server.post('/api/login', (req, res) => {
 =========== GET ALL USERS (PROTECTED)
 [GET] request within 15 minutes of logging in.
 */
-server.get('/api/users', restricted, (req, res) => {
+server.get('/api/users', middleware.restricted, (req, res) => {
   userDb
     .find()
     .then(users => {
@@ -108,5 +109,20 @@ server.get('/api/logout', (req, res) => {
     res.end();
   }
 });
+
+/*
+=========== GET PROTECTED USERS (PROTECTED)
+[GET] request within 15 minutes of logging in.
+*/
+server.get('/api/protected/users', (req, res) => {
+    userDb
+      .find()
+      .then(users => {
+        res.status(200).json(users);
+      })
+      .catch(err =>
+        res.status(500).json({ message: 'the users could not be retrieved' }),
+      );
+  });
 
 module.exports = server;
