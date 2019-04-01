@@ -5,11 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "initdb": "knex init",
+    "userstable": "knex migrate:make createUsersTable",
+    "migrate": "knex migrate:latest",
+    "rollback": "knex migrate:rollback"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mark-marshall/webauth-i-challenge.git"
+
   },
   "keywords": [],
   "author": "",
@@ -21,6 +26,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^4.16.4",
+    "helmet": "^3.16.0",
     "knex": "^0.16.3",
     "sqlite3": "^4.0.6"
   },
