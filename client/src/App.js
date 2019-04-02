@@ -19,11 +19,15 @@ class App extends Component {
   };
 
   componentDidMount() {
-    if (localStorage.getItem('auth')) {
+    if (localStorage.getItem('msg')) {
       axios
         .get('http://localhost:4000/api/users')
-        .then(users => this.setUsers(users.data))
-        .catch(err => console.log(err));
+        .then(users => {
+          this.setUsers(users.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   }
 
@@ -69,19 +73,24 @@ class App extends Component {
     });
   };
 
-  registerUser = user => {
+  registerUser = (event, user) => {
+    event.preventDefault();
     axios
       .post('http://localhost:4000/api/register', user)
-      .then(localStorage.setItem('auth', true))
-      .then(this.resetEntry())
+      .then(res => {
+        localStorage.setItem('id', res.data.id)
+      })
       .catch(err => console.log(err));
   };
 
-  loginUser = user => {
+  loginUser = (event, user) => {
+    event.preventDefault();
     axios
       .post('http://localhost:4000/api/login', user)
-      .then(localStorage.setItem('auth', true))
-      .then(this.resetLogin())
+      .then(res => {
+        localStorage.setItem('msg', res.data.message)
+        this.resetLogin();
+      })
       .catch(err => console.log(err));
   };
 

@@ -18,7 +18,7 @@ export default function Register({ user, changeHandler, registerUser }) {
           onChange={changeHandler}
           type="password"
         />
-        <button onClick={() => registerUser(user)}>Register</button>
+        <button onClick={event => registerUser(event,user)}>Register</button>
       </form>
     </div>
   );

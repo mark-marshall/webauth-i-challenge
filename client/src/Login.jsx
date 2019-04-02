@@ -18,7 +18,7 @@ export default function Login({ user, changeHandler, loginUser }) {
           onChange={changeHandler}
           type="password"
         />
-        <button onClick={() => loginUser(user)}>Login</button>
+        <button onClick={event => loginUser(event, user)}>Login</button>
       </form>
     </div>
   );
