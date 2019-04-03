@@ -31,6 +31,7 @@ server.post('/api/register', (req, res) => {
     userDb
       .add(user)
       .then(user => {
+        req.session.user = user;
         res.status(201).json(user);
       })
       .catch(err => {
@@ -59,7 +60,7 @@ server.post('/api/login', (req, res) => {
       .findBy({ username })
       .then(user => {
         if (user && bcrypt.compareSync(password, user.password)) {
-          req.session.username = user.username;
+          req.session.user = user;
           res.status(200).json({ message: `welcome in ${username}` });
         } else {
           res

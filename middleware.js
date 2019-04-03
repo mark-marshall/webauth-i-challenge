@@ -1,5 +1,5 @@
 const restricted = (req, res, next) => {
-  if (req.session && req.session.username) {
+  if (req.session && req.session.user) {
     next();
   } else {
     res.status(401).json({ message: 'not authenticated' });
@@ -9,7 +9,7 @@ const restricted = (req, res, next) => {
 const protected = (req, res, next) => {
   const url = req.url;
   if (url.includes('protected')) {
-    if (req.session && req.session.username) {
+    if (req.session && req.session.user) {
       next();
     } else {
       res.status(401).json({ message: 'not authenticated' });
